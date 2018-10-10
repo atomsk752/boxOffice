@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+</head>
+<body>
+
+<div id="demo">
+    <h2>박스오피스 영화순위</h2>
+    <button type="button" onclick="loadDoc(-30)">한달전</button>
+    <button type="button" onclick="loadDoc(-7)">일주일전</button>
+    <button type="button" onclick="loadDoc(-1)">오늘</button>
+</div>
+<script>
+    function loadDoc(date) {
+        var xhttp = new XMLHttpRequest();
+        var today = new Date();
+        today.setDate(today.getDate() + date);
+        var dd = today.getDate();
+        var mm = today.getMonth() + 1 + "";
+        var yyyy = today.getFullYear();
+
+        if(dd < 10) {
+            dd = '0' + dd;
+        }
+
+        if (mm < 10) {
+            mm = '0' + mm;
+        }
+
+
+        today = yyyy + mm + dd;
+
+        xhttp.onreadystatechange = function() {
+            if (xhttp.readyState == 4 && xhttp.status == 200) {
+                var text = JSON.parse(xhttp.responseText);
+                var movieInfo = "";
+                var movieArr =  text.boxOfficeResult.dailyBoxOfficeList;
+                for (var i=0; i<movieArr.length; i++) {
+                    var data = ""
+                    console.log(data);
+                    for (key in movieArr[i]) {
+                        if (key=="rank" || key=="movieNm" || key=="openDt" || key=="audiCnt"){
+                            data += key + " = " + movieArr[i][key] + " ";
+                        }else{
+                            continue;
+                        }
+                        console.log(movieInfo);
+                    }
+                    movieInfo += "<li>" + data + "</li>";
+                }
+
+                document.getElementById("demo").innerHTML = movieInfo;
+            }
+        };
+        xhttp.open("GET", "http://www.kobis.or.kr/kobisopenapi/webservice/rest/boxoffice/searchDailyBoxOfficeList.json?key=430156241533f1d058c603178cc3ca0e&targetDt="+today, true);
+        xhttp.send();
+    }
+</script>
+
+</body>
+</html>
